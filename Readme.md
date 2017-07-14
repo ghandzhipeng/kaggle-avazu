@@ -41,7 +41,13 @@ Can be found in the pdf. Mainly generating the features, feed them to different 
 3. Data read by pandas are firstly treated as objects.. astype('string')
 4. The parameter "header" of pandas.read_csv is confusing: True(1-st line), False(0-th line)
 , None(no schema info). Also, Dataframe can access/ADD via columns, via attributes, df['name', df.name.values=="ddddd"].
+	- s.iloc[] -- for integer position addressing;
+	- s.loc[] -- for index label addressing; and
+	- s.ix[] -- for a hybrid of integer position and label addressing.
+	- s.shape[0] -- how many rows
 5. numpy deals with arrays.
 6. many other errors like len of values and index not match... google it.
+7. ./configure --prefix=$HOME/myapps, make, make install(mostly not this)
+
 
 

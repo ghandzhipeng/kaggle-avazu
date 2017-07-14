@@ -4,7 +4,7 @@ from sklearn.utils import check_random_state
 import time
 import sys
 from joblib import dump, load
-
+import sys
 sample_pct = .05
 tvh = 'N'
 xgb_n_trees = 300
@@ -13,15 +13,18 @@ xgb_n_trees = 300
 #Please set following path accordingly
 
 #where we can find training, test, and sampleSubmission.csv
-raw_data_path = '/home/fast/2014_mobilectr/'
+raw_data_path = './data/'
 #where we store results -- require about 130GB
 tmp_data_path = './tmp_data/'
 
 #path to external binaries. Please see dependencies in the .pdf document
-fm_path = ' ~/Downloads/guestwalk/kaggle-2014-criteo/fm'
-xgb_path = '/home/zzhang/Downloads/xgboost/wrapper'
-vw_path = '~/vowpal_wabbit/vowpalwabbit/vw '
+#fm_path = ' ~/Downloads/guestwalk/kaggle-2014-criteo/fm'
+#xgb_path = '/home/zzhang/Downloads/xgboost/wrapper'
+#vw_path = '~/vowpal_wabbit/vowpalwabbit/vw '
 
+fm_path = './env/local/kaggle-2014-criteo/'
+xgb_path = './env/local/zhipeng/local/xgboost'
+vw_path = './env/local/vowpal_wabbit/vowpalwabbit/vw'
 
 try:
     params=load(tmp_data_path + '_params.joblib_dat')
@@ -152,6 +155,10 @@ def gini_norm(pred, y, weight=None):
     if weight == None:
         weight = np.ones(y.size)
 
+    print "y", y
+    print "weight", weight
+    print "pred", pred
+
     #sort actual by prediction
     ord = np.argsort(pred)
     y2 = y[ord]
@@ -169,7 +176,7 @@ def gini_norm(pred, y, weight=None):
     #gini by actual
     cumm_y = np.cumsum(y2)
     g0 = 1 - 2 * sum(cumm_y * w2) / (total_y * total_w)
-
+    print "hello-----------"
     return g1/g0
 
 def mergeLeaveOneOut2(df, dfv, vn):
@@ -425,7 +432,7 @@ def calc_exptv(t0, vn_list, last_day_only=False, add_count=False):
         if vn == 'dev_id_ip':
             t0a[vn] = pd.Series(np.add(t0.device_id.values , t0.device_ip.values)).astype('category').values.codes
         elif vn == 'dev_ip_aw':
-            t0a[vn] = pd.Series(np.add(t0.device_ip.values , t0.app_or_web.astype('string').values)).astype('category').values.codes
+            t0a[vn] = pd.Series(np.add(t0.device_ip.astype('string').values , t0.app_or_web.astype('string').values)).astype('category').values.codes
         elif vn == 'C14_aw':
             t0a[vn] = pd.Series(np.add(t0.C14.astype('string').values , t0.app_or_web.astype('string').values)).astype('category').values.codes
         elif vn == 'C17_aw':
@@ -433,15 +440,15 @@ def calc_exptv(t0, vn_list, last_day_only=False, add_count=False):
         elif vn == 'C21_aw':
             t0a[vn] = pd.Series(np.add(t0.C21.astype('string').values , t0.app_or_web.astype('string').values)).astype('category').values.codes
         elif vn == 'as_domain':
-            t0a[vn] = pd.Series(np.add(t0.app_domain.values , t0.site_domain.values)).astype('category').values.codes
+            t0a[vn] = pd.Series(np.add(t0.app_domain.astype('string').values , t0.site_domain.astype('string').values)).astype('category').values.codes
         elif vn == 'site_app_id':
-            t0a[vn] = pd.Series(np.add(t0.site_id.values , t0.app_id.values)).astype('category').values.codes
+            t0a[vn] = pd.Series(np.add(t0.site_id.values.astype('string').values , t0.app_id.astype('string').values)).astype('category').values.codes
         elif vn == 'app_model':
-            t0a[vn] = pd.Series(np.add(t0.app_id.values , t0.device_model.values)).astype('category').values.codes
+            t0a[vn] = pd.Series(np.add(t0.app_id.astype('string').values , t0.device_model.astype('string').values)).astype('category').values.codes
         elif vn == 'app_site_model':
-            t0a[vn] = pd.Series(np.add(t0.app_id.values , np.add(t0.site_id.values , t0.device_model.values))).astype('category').values.codes
+            t0a[vn] = pd.Series(np.add(t0.app_id.astype('string').values , np.add(t0.site_id.astype('string').values , t0.device_model.astype('string').values))).astype('category').values.codes
         elif vn == 'site_model':
-            t0a[vn] = pd.Series(np.add(t0.site_id.values , t0.device_model.values)).astype('category').values.codes
+            t0a[vn] = pd.Series(np.add(t0.site_id.astype('string').values , t0.device_model.astype('string').values)).astype('category').values.codes
         elif vn == 'app_site':
             t0a[vn] = pd.Series(np.add(t0.app_id.values , t0.site_id.values)).astype('category').values.codes
         elif vn == 'site_ip':
