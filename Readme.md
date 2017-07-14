@@ -50,4 +50,4 @@ Can be found in the pdf. Mainly generating the features, feed them to different 
 7. ./configure --prefix=$HOME/myapps, make, make install(mostly not this)
 
 
-
+OK. I was just played for one and a half days... There are preprocessed features for these data whose code got the first place in the competition. https://github.com/guestwalk/kaggle-avazu 
