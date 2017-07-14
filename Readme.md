@@ -33,8 +33,15 @@ Can be found in the pdf. Mainly generating the features, feed them to different 
 
 ## Debugs:
 - after setting up the environment, there may be some bugs like ...(I forgot it). Mostly caused by not familar with Dataframe, numpy. Also there maybe some misuse of tools like ffm-train, ffm-predict, some path errors...
-- another hint, when using small data to debug, please do not only ```head -n, tail -n```, combine them.
-- numpy operate arrays; pandas read_csv: the header is confusing, True(1 line), False(0 line)
-, None(no schema info);...
+- another hint, when using small data to debug, please do not only ```head -n, tail -n```, combine them or split the file and randomly choose some.
+
+## Things got:
+1. You should first restore the environment of when running an existing code, may takes some time.
+2. When there is a bug, you cannot modify it until you understand what the API exactly means, what the code is doing... Or it will waste you a lot of time.
+3. Data read by pandas are firstly treated as objects.. astype('string')
+4. The parameter "header" of pandas.read_csv is confusing: True(1-st line), False(0-th line)
+, None(no schema info). Also, Dataframe can access/ADD via columns, via attributes, df['name', df.name.values=="ddddd"].
+5. numpy deals with arrays.
+6. many other errors like len of values and index not match... google it.
 
 
