@@ -108,8 +108,8 @@ def build_data():
 
 
 
-    t3a.ix[np.logical_and(np.logical_and(day_values < test_day, day_values >= 22), True),:].to_csv(open(fn_t, 'w'), sep='\t', header=False, index=False)
-    t3a.ix[day_values==test_day,:].to_csv(open(fn_v, 'w'), sep='\t', header=False, index=False)
+    t3a.ix[np.logical_and(np.logical_and(day_values < test_day, day_values >= 22), True),:].to_csv(open(fn_t, 'w'), sep=',', header=False, index=False)
+    t3a.ix[day_values==test_day,:].to_csv(open(fn_v, 'w'), sep=',', header=False, index=False)
 
 
 build_data()
@@ -118,12 +118,20 @@ gc.collect()
 
 
 import os
-fm_cmd = utils.fm_path + ' -k ' + str(nr_factor) + ' -t ' + str(n_iter) + ' -s '+ str(n_threads) + ' '
-fm_cmd += ' -d ' + str(rseed) + ' -r ' + str(learning_rate) + ' ' + fn_v + ' ' + fn_t
+fn_model = fn_v + str(rseed) + '.model'
+fm_cmd = utils.fm_path +'ffm-train' + ' -k ' + str(nr_factor) + ' -t ' + str(n_iter) + ' -s '+ str(n_threads) + ' '
+# Note: ffm-train has no option of -d. So I removed it. But latter it should be figured out what it is. And may be added.
+# Note: we are not using validation result anymore. 
+#fm_cmd += ' -d ' + str(rseed) + ' -r ' + str(learning_rate) + ' -p ' + fn_v + ' ' + fn_t
+fm_cmd += ' -r ' + str(learning_rate) + ' ' + fn_t + ' ' + fn_model
 
 print fm_cmd
 os.system(fm_cmd)
+fn_v_pred = fn_v + '.out'
+fm_pred = utils.fm_path + 'ffm-predict'+ ' ' + fn_v + ' ' +fn_model + ' ' + fn_v_pred
 
-os.system("rm " + fn_t)
-os.system("rm " + fn_v)
+os.system(fm_pred)
+# Note: this cannot be removed, since these files will be used latter.
+#os.system("rm " + fn_t)
+#os.system("rm " + fn_v)
 

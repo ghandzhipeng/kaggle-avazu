@@ -6,7 +6,7 @@ from sklearn.utils import check_random_state
 import pylab 
 import sys
 import time
-sys.path.append('/home/zzhang/Downloads/xgboost/wrapper')
+#sys.path.append('/home/zzhang/Downloads/xgboost/wrapper')
 import xgboost as xgb
 from joblib import dump, load, Parallel, delayed
 import utils
@@ -17,9 +17,8 @@ raw_data_path = utils.raw_data_path
 tmp_data_path = utils.tmp_data_path
 
 
-t0org0 = pd.read_csv(open(raw_data_path + "train", "ra"))
+t0org0 = pd.read_csv(open(raw_data_path + "train", "ra"))  # 9 * 24
 h0org = pd.read_csv(open(raw_data_path + "test", "ra"))
-
 
 if utils.sample_pct < 1.0:
     np.random.seed(999)
@@ -29,11 +28,11 @@ if utils.sample_pct < 1.0:
 
 
 h0org['click'] = 0
-t0org = pd.concat([t0org0, h0org])
+t0org = pd.concat([t0org0, h0org]) # 19 * 24
 print "finished loading raw data, ", t0org.shape
-
 print "to add some basic features ..."
 t0org['day']=np.round(t0org.hour % 10000 / 100)
+
 t0org['hour1'] = np.round(t0org.hour % 100)
 t0org['day_hour'] = (t0org.day.values - 21) * 24 + t0org.hour1.values
 t0org['day_hour_prev'] = t0org['day_hour'] - 1
@@ -43,8 +42,11 @@ t0org.ix[t0org.app_id.values=='ecad2386', 'app_or_web'] = 1
 
 t0 = t0org
 
+print t0.app_id.dtype, t0.site_id.dtype
+
 t0['app_site_id'] = np.add(t0.app_id.values, t0.site_id.values)
 
+print t0.app_site_id.dtype, t0.app_site_id.values
 print "to encode categorical features using mean responses from earlier days -- univariate"
 sys.stdout.flush()
 
@@ -63,9 +65,13 @@ vns = ['app_or_web',  'device_ip', 'app_site_id', 'device_model', 'app_site_mode
                         'device_type', 'device_conn_type','app_site_model_aw', 'dev_ip_app_site']
 dftv = t0.ix[np.logical_and(t0.day.values >= 21, t0.day.values < 32), ['click', 'day', 'id'] + vns].copy()
 
-dftv['app_site_model'] = np.add(dftv.device_model.values, dftv.app_site_id.values)
-dftv['app_site_model_aw'] = np.add(dftv.app_site_model.values, dftv.app_or_web.astype('string').values)
-dftv['dev_ip_app_site'] = np.add(dftv.device_ip.values, dftv.app_site_id.values)
+
+print dftv.shape #9*16
+print t0.shape #19*49 // totally different
+
+dftv['app_site_model'] = np.add(dftv.device_model.astype('string').values, dftv.app_site_id.astype('string').values)
+dftv['app_site_model_aw'] = np.add(dftv.app_site_model.astype('string').values, dftv.app_or_web.astype('string').values)
+dftv['dev_ip_app_site'] = np.add(dftv.device_ip.astype('string').values, dftv.app_site_id.astype('string').values)
 for vn in vns:
     dftv[vn] = dftv[vn].astype('category')
     print vn
@@ -75,12 +81,15 @@ n_ks = {'app_or_web': 100, 'app_site_id': 100, 'device_ip': 10, 'C14': 50, 'app_
         'app_site_model_aw': 100, 'dev_ip_app_site': 10 , 'device_model': 500}
 
 exp2_dict = {}
+print dftv.shape[0]
+print dftv.shape
+
 for vn in vns:
     exp2_dict[vn] = np.zeros(dftv.shape[0])
 
 days_npa = dftv.day.values
     
-for day_v in xrange(22, 32):
+for day_v in xrange(22, 32): # the total range is [21,31], here we are choosing validation days
     df1 = dftv.ix[np.logical_and(dftv.day.values < day_v, dftv.day.values < 31), :].copy()
     df2 = dftv.ix[dftv.day.values == day_v, :]
     print "Validation day:", day_v, ", train data shape:", df1.shape, ", validation data shape:", df2.shape
@@ -106,6 +115,13 @@ for day_v in xrange(22, 32):
         print "logloss = ", logloss(pred1, df2.click.values)
         #print my_lift(pred1, None, df2.click.values, None, 20, fig_size=(10, 5))
         #plt.show()
+
+print "dftv.shape:", dftv.shape[1], dftv.shape[0]
+print len(vns)
+print len(exp2_dict)
+print type(t0), type(exp2_dict)
+for vn in vns:
+    print exp2_dict[vn]
 
 for vn in vns:
     t0['exp2_'+vn] = exp2_dict[vn]

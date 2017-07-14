@@ -1,0 +1,40 @@
+## Dataset:
+- click through data from day 21, 00:00 am to day 30, 23:00 pm.
+- 40 M samples * 24 attributes, labels \in {0, 1}
+
+## The entire process:
+Can be found in the pdf. Mainly generating the features, feed them to different models, ensemble the models.
+
+## Dependencies
+1. Python 2.7.x + numpy + pandas + scikit­learn. Note that below is a feasible configuration but not a necessary one.
+	- numpy == 1.10, for ndarrays
+	- pandas == 0.15, for dataframes
+	- sklearn == 0.17, for learning.
+
+2. Vowpal Wabbit:
+	- https://github.com/JohnLangford/vowpal_wabbit/wiki
+	- after compiling the code, the path can be found: ---/vowpal_wabbit/vowpalwabbit/vw
+	- VW relies on boost library.
+	- charas of VW:
+		- input format: [Label] [Importance] [Base] [Tag]|Namespace Features |Namespace Features ... |Namespace Features. Google for details.
+		- optimized for Sparse data, pretty fast.
+		- Feature Pairing.
+		- can run programs use command line, like ```vw -paras values```
+
+3. 3 idiot’s FM: 
+	- https://github.com/guestwalk/kaggle­2014­criteo
+	- after compiling, two executable files can be found: ffm-train, ffm-predict. Both can have several paras, used like ```ffm-train -paras values``` (Not fm!)
+	- can handle field-aware factorization machines.
+
+4. xgboost: 
+	- https://github.com/tqchen/xgboost
+	- after compiling, add it to the PYTHONPATH and you can use it via python: PYTHONPATH=---/xgboost/python-package
+	- can handle gbdt algs.
+
+## Debugs:
+- after setting up the environment, there may be some bugs like ...(I forgot it). Mostly caused by not familar with Dataframe, numpy. Also there maybe some misuse of tools like ffm-train, ffm-predict, some path errors...
+- another hint, when using small data to debug, please do not only ```head -n, tail -n```, combine them.
+- numpy operate arrays; pandas read_csv: the header is confusing, True(1 line), False(0 line)
+, None(no schema info);...
+
+

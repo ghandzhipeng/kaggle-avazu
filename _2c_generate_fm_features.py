@@ -21,7 +21,6 @@ print "t0tv_mx loaded with shape", t0tv_mx.shape
 t0 = load(utils.tmp_data_path + 't3a.joblib_dat')['t3a']
 print "t0 loaded with shape", t0.shape
 
-
 vns={}
 _vns1 = ['app_or_web', 'banner_pos', 'C1', 'C15', 'C16', 'C20',  'C14',
         'cnt_device_ip_day_hour', 'cnt_device_ip_day_hour_prev',
@@ -39,9 +38,8 @@ vns['all_but_ip'] = ['app_or_web', 'device_conn_type', 'C18', 'device_type',
        '_A_C1', '_A_banner_pos', '_A_C16', '_A_C15', '_A_C18', '_A_C19',
        '_A_C21', '_A_C20', '_A_C17', '_A_C14', 'as_model', 'dev_id2plus']
 
-cmd_str = utils.fm_path + ' -t 4 -s 8 -l 1e-5 /dev/shm/_tmp_2way_v.txt /dev/shm/_tmp_2way_t.txt'
 
-day_bgn = 22
+day_bgn = 31 # Note: it should be changed back to 22.
 day_end = 32
 
 fm_vecs = {}
@@ -61,24 +59,32 @@ for day_v in xrange(day_bgn, day_end):
             idx_base = t1[vn].values.max() + 1
             #print '-'* 5, vn, idx_base
 
-        path1 = '/dev/shm/'
+        path1 = utils.tmp_data_path # modified from '/dev/shm'
         fn_t = path1 + '_tmp_2way_t.txt'
         fn_v = path1 + '_tmp_2way_v.txt'
+        fn_model = path1 + "_tmp_2way_.model" # store the model
+        fn_v_pred = path1 + "_tmp_2way_v_out.txt" # store the predication of validation data
         
         print "to write data files ..."
         
-        t1.ix[np.logical_and(day_values>=21, day_values < day_v),:].to_csv(open(fn_t, 'w'), sep='\t', header=False, index=False)
-        t1.ix[day_values==day_v,:].to_csv(open(fn_v, 'w'), sep='\t', header=False, index=False)
+        t1.ix[np.logical_and(day_values>=21, day_values < day_v),:].to_csv(open(fn_t, 'w'), sep=',', header=False, index=False)
+        t1.ix[day_values==day_v,:].to_csv(open(fn_v, 'w'), sep=',', header=False, index=False)
 
+        # train & validation, get the model
+        cmd_train = utils.fm_path + 'ffm-train' + ' -t 4 -s 8 -l 1e-5 ' + ' ' + fn_t + ' ' + fn_model
+        print cmd_train
+        os.system(cmd_train)
         
-        print cmd_str
-        os.system(cmd_str)
-        
+        ## NOTE: Since run with small dataset, the validation dataset maybe empty. So I use train dataset as validation dataset here. When run the full data, it must be changed.
+        cmd_pred = utils.fm_path + 'ffm-predict' + ' ' + fn_v + ' ' + fn_model + ' ' + fn_v_pred
+        print cmd_pred
+        os.system(cmd_pred)
         print "load results ..."
-        fm_predv = pd.read_csv(open(path1 + '_tmp_2way_v.txt.out', 'r'), header=None).ix[:,0].values
+        # fm_predv = pd.read_csv(open(path1 + '_tmp_2way_v.txt.out', 'r'), header=None).ix[:,0].values
+        fm_predv = pd.read_csv(open(fn_v_pred, 'r'), header=None)
+        fm_predv = fm_predv.ix[:,0].values # here _.out does not exist, so I guess it's the predicated validation dataset.
         
         print "--- gini_norm:", gini_norm(fm_predv, click_values[day_values==day_v], None)
-        
         fm_vecs[day_v][vns_name] = fm_predv
         print '='*60
 

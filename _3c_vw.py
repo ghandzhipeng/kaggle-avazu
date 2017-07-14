@@ -190,8 +190,8 @@ if tvh == 'Y':
 else:
     holdout_str = " --holdout_period 7 "
     
-mdl_name = 'vw' + file_name1 + ".mdl"
-vw_cmd_str = utils.vw_path + fn_t + ".gz --random_seed " + str(rseed) + " " + \
+mdl_name = utils.tmp_data_path + 'vw' + file_name1 + ".mdl"
+vw_cmd_str = utils.vw_path + " " + fn_t + ".gz --random_seed " + str(rseed) + " " + \
 "--passes " + str(n_passes) + " -c --progress 1000000 --loss_function logistic -b 25 " +  holdout_str + \
 "--l2 1e-7 -q CS -q CM -q MS -l .1 --power_t .5 -q NM -q NS --decay_learning_rate .75 --hash all " + \
 " -q SX -q MX -q SY -q MY -q SZ -q MZ -q NV -q MV -q VX -q VY -q VZ" + \
@@ -199,7 +199,7 @@ vw_cmd_str = utils.vw_path + fn_t + ".gz --random_seed " + str(rseed) + " " + \
 print vw_cmd_str
 os.system(vw_cmd_str)
 
-vw_cmd_str = utils.vw_path + fn_v + ".gz --hash all " + \
+vw_cmd_str = utils.vw_path + " " + fn_v + ".gz --hash all " + \
     "-i " + mdl_name + " -p " + fn_v + "_pred.txt -t --loss_function logistic --progress 200000"
 print vw_cmd_str
 os.system(vw_cmd_str)

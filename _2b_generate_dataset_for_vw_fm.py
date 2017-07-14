@@ -52,7 +52,7 @@ for vn in vns1:
     elif vn in ['as_category']:
         _cat = pd.Series(np.add(t3['app_category'].values, t3['site_category'].values)).astype('category').values.codes
     elif vn in ['as_model']:
-        _cat = pd.Series(np.add(t3['app_site_id'].values, t3['device_model'].values)).astype('category').values.codes
+        _cat = pd.Series(np.add(t3['app_site_id'].astype('string').values, t3['device_model'].astype('string').values)).astype('category').values.codes
     else:
         _cat = t3[vn].astype('category').values.codes
     _cat = np.asarray(_cat, dtype='int32')

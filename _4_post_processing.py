@@ -35,7 +35,10 @@ print "xgb prediction loaded with shape", xgb_pred.shape
 ctr = 0
 vw_pred = 0
 for i in [1, 2, 3, 4]:
-    vw_pred += 1 / (1+ np.exp(-pd.read_csv(open(utils.tmp_data_path + 'vwV12__r%d_test.txt_pred.txt'%i, 'r'), header=None).ix[:,0].values))
+    xg_pred = pd.read_csv(open(utils.tmp_data_path + 'vwV12__r%d_test.txt_pred.txt'%i, 'r'), header=None).ix[:,0].values 
+    print xg_pred.shape
+    vw_pred += 1 / (1+ np.exp(-xg_pred))
+    #vw_pred += 1 / (1+ np.exp(-(pd.read_csv(open(utils.tmp_data_path + 'vwV12__r%d_test.txt_pred.txt'%i, 'r'), header=None).ix[:,0].values)))
     ctr += 1
 vw_pred /= ctr
 print "VW prediction loaded with shape", vw_pred.shape
