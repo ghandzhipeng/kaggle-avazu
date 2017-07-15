@@ -52,9 +52,9 @@ Can be found in the pdf. Mainly generating the features, feed them to different 
 ## Features generated and used in different files:
 | program        | generated files(Usage)           |
 | ------------- |:-------------:| 
-| \_1\_encode\_cat\_features.py| t0.joblib.dat(\_2b\_generate\_dataset\_for\_vw\_fm.py) & t0tv_mx.joblib.dat(\_3c\_vw.py, \_3d\_fm.py) | 
-|\_2b\_generate\_dataset\_for\_vw\_fm.py | t3a.joblib.dat(\_3c\_vw.py, \_3d\_fm.py) |
-| \_2c\_generate\_fm\_features.py | t2.joblib\_dat(never used) & t0tv_mx3.joblib\_dat(\_3a\_rf.py, _3b_gbdt.py) |
+| \_1\_encode\_cat\_features.py| t0.joblib.dat(\_2b\_generate\_dataset\_for\_vw\_fm.py) & **t0tv_mx.joblib.dat(\_3c\_vw.py, \_3d\_fm.py)** | 
+|\_2b\_generate\_dataset\_for\_vw\_fm.py | **t3a.joblib.dat(\_3c\_vw.py, \_3d\_fm.py)** |
+| \_2c\_generate\_fm\_features.py | t2.joblib\_dat(never used) & **t0tv_mx3.joblib\_dat(\_3a\_rf.py, _3b_gbdt.py)** |
 
 
 OK. I was just played for one and a half days... There are preprocessed features for these data whose code got the first place in the competition. https://github.com/guestwalk/kaggle-avazu 
