@@ -39,7 +39,7 @@ vns['all_but_ip'] = ['app_or_web', 'device_conn_type', 'C18', 'device_type',
        '_A_C21', '_A_C20', '_A_C17', '_A_C14', 'as_model', 'dev_id2plus']
 
 
-day_bgn = 31 # Note: it should be changed back to 22.
+day_bgn = 22 # Note: it should be changed back to 22.
 day_end = 32
 
 fm_vecs = {}
